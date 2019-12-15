@@ -9,13 +9,15 @@ public class SwitchCamera : MonoBehaviour
     public Transform sprintBar;
     public Transform sprintBG;
     private Vector2 start;
+    public bool last;
     private void Start()
     {
         start = sprintBar.position;
     }
     void Update()
     {
-        if(Input.GetKeyDown("space"))
+        //if(Input.GetKeyDown("space"))
+        if(last != ArduinoControl.Instance.camera)
         {
             if(mainCamera.enabled)
             {
@@ -33,5 +35,7 @@ public class SwitchCamera : MonoBehaviour
                 sprintBG.position = start;
             }
         }
+
+        last = ArduinoControl.Instance.camera;
     }
 }

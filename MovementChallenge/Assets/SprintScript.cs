@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO.Ports;
 
 public class SprintScript : MonoBehaviour
 {
     public Image sprintBar;
     public Image sprintBG;
 
-    public float sprintSpeed = 1.4f;
+    private float sprintSpeed = 1.4f;
     public float maxSprint = 100f;
     public float sprintRegen = 2f;
     public float sprintRegenTime = 2f;
@@ -26,6 +27,8 @@ public class SprintScript : MonoBehaviour
     }
     void Update()
     {
+        sprintSpeed = ArduinoControl.Instance.sprint + 1;
+
         sprintBar.fillAmount = currentSprint / maxSprint;
         if(sprintBar.fillAmount == 1)
         {
@@ -50,14 +53,14 @@ public class SprintScript : MonoBehaviour
             sprintBG.enabled = true;
         }
 
-        if(Input.GetKeyDown("left shift") && sprintBar.fillAmount != 0)
+        if(/*Input.GetKeyDown("left shift")*/ sprintSpeed > 1.1 && sprintBar.fillAmount != 0)
         {
-            Player.Instance.speed *= sprintSpeed;
+            Player.Instance.speed = Player.Instance.startSpeed * sprintSpeed;
             sprinting = "yes";
         }
-        if(Input.GetKeyUp("left shift") && sprinting == "yes")
+        if (/*Input.GetKeyUp("left shift")*/ sprintSpeed < 1.1 && sprinting == "yes")
         {
-            Player.Instance.speed /= sprintSpeed;
+            Player.Instance.speed = Player.Instance.startSpeed; //sprintSpeed;
             sprinting = "wait";
             waitTime = 0f;
         }
@@ -76,8 +79,8 @@ public class SprintScript : MonoBehaviour
         }
         else if(sprinting == "yes")
         {
-            currentSprint -= sprintDepletion;
-            if(currentSprint <= 0)
+            currentSprint -= ArduinoControl.Instance.sprint; //sprintDepletion;
+            if (currentSprint <= 0)
             {
                 currentSprint = 0;
                 Player.Instance.speed /= sprintSpeed;
